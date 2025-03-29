@@ -12,6 +12,25 @@ body {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+/* Добавьте это в style.css */
+.special-buttons {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary.active {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+/* Остальные стили остаются как были */
+
 .typing-animation::after {
     content: '...';
     animation: typing 1.5s infinite;
