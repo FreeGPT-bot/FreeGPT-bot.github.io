@@ -1,50 +1,55 @@
-/* Основные стили */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* Градиентный фон */
+.gradient-bg {
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    color: #e2e8f0;
+    padding: 20px 0;
 }
 
+/* Контейнер чата */
 .chat-container {
-    max-width: 800px;
-    margin: 0 auto;
     background-color: rgba(15, 23, 42, 0.8);
     border-radius: 15px;
     padding: 25px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    color: #e2e8f0;
     border: 1px solid #3b82f6;
 }
 
-/* Стили чата */
+/* Заголовок */
+.header h1 {
+    color: #3b82f6;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    font-weight: 700;
+}
+
+.header p {
+    color: #94a3b8;
+}
+
+/* Окно чата */
 .chat-box {
     height: 500px;
     overflow-y: auto;
     padding: 15px;
-    background-color: rgba(20, 30, 50, 0.5);
+    background-color: rgba(30, 41, 59, 0.5);
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     border: 1px solid #1e3a8a;
 }
 
+/* Сообщения */
 .message {
     margin-bottom: 15px;
     max-width: 80%;
     padding: 12px 15px;
     border-radius: 15px;
     position: relative;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: fadeIn 0.3s forwards;
+    animation: fadeIn 0.3s ease-out;
 }
 
 @keyframes fadeIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .user-message {
@@ -60,12 +65,48 @@ body {
     border-bottom-left-radius: 5px;
 }
 
-/* Плавный набор текста */
-.typing-animation {
-    display: inline-block;
+.message-content {
+    margin-bottom: 5px;
+    word-wrap: break-word;
 }
 
-.typing-animation::after {
+.message-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    text-align: right;
+}
+
+/* Поле ввода */
+.input-group {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#userInput {
+    background-color: rgba(30, 41, 59, 0.8);
+    border: 1px solid #334155;
+    color: white;
+    padding: 12px;
+}
+
+#userInput:focus {
+    background-color: rgba(30, 41, 59, 0.9);
+    border-color: #3b82f6;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    border: none;
+    padding: 0 20px;
+}
+
+/* Футер */
+.footer {
+    border-top: 1px solid #334155;
+    padding-top: 10px;
+}
+
+/* Анимация набора текста */
+.typing::after {
     content: '...';
     animation: typing 1.5s infinite;
 }
@@ -76,20 +117,12 @@ body {
     66% { content: '...'; }
 }
 
-/* Поле ввода */
-.input-group {
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-#userInput {
-    background-color: rgba(30, 41, 59, 0.8);
-    border: 1px solid #334155;
-    color: white;
-    padding: 12px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-    border: none;
-    padding: 0 20px;
+/* Адаптивность */
+@media (max-width: 768px) {
+    .chat-box {
+        height: 400px;
+    }
+    .message {
+        max-width: 90%;
+    }
 }
