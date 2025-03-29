@@ -46,7 +46,7 @@ def chat():
         messages.append({"role": "user", "content": prompt})
         
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4o-mini",
             messages=messages,
             timeout=60
         )
