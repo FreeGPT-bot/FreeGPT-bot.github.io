@@ -1,17 +1,18 @@
 from flask import Flask, render_template, request, jsonify
 from g4f import ChatCompletion
+import asyncio
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
 @app.route('/')
 def home():
     return render_template('index.html')
 
 @app.route('/chat', methods=['POST'])
-def chat():
+async def chat():
     try:
         prompt = request.json.get('prompt')
-        response = ChatCompletion.create(
+        response = await ChatCompletion.create_async(
             model='gpt-4',
             messages=[{'role': 'user', 'content': prompt}]
         )
