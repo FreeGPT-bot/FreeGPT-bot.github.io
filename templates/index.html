@@ -14,8 +14,12 @@
             <div class="col-lg-8 col-md-10 col-sm-12">
                 <div class="chat-container">
                     <div class="header">
-                        <h1 class="text-center mb-4"><i class="bi bi-cpu"></i> Arbyz AI</h1>
-                        <p class="text-center mb-4">Мощный нейросетевой помощник</p>
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h1 class="mb-0"><i class="bi bi-cpu"></i> Arbyz</h1>
+                        </div>
+                        <p class="text-center mb-4">
+                            <i class="bi bi-arrow-right"></i> Arbyz-AI — бесплатная нейросеть без VPN на русском языке
+                        </p>
                     </div>
                     <div class="chat-box" id="chatBox">
                         <div class="message bot-message">
@@ -29,16 +33,11 @@
                     </div>
                     <div class="input-group mt-3">
                         <input type="text" class="form-control" id="userInput" placeholder="Введите ваш вопрос...">
+                        <button class="btn btn-outline-secondary" id="voiceButton" type="button">
+                            <i class="bi bi-mic"></i>
+                        </button>
                         <button class="btn btn-primary" id="sendButton">
                             <i class="bi bi-send"></i> Отправить
-                        </button>
-                    </div>
-                    <div class="special-buttons mt-2">
-                        <button id="unlockButton" class="btn btn-secondary">
-                            <i class="bi bi-unlock"></i> Отключить ограничения ИИ
-                        </button>
-                        <button id="imageGenButton" class="btn btn-secondary ms-2">
-                            <i class="bi bi-image"></i> Ген. изображение
                         </button>
                     </div>
                     <div class="footer text-center mt-3">
