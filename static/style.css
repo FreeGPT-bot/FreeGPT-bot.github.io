@@ -12,6 +12,32 @@ body {
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
+/* Добавьте эти стили в ваш существующий CSS */
+
+#voiceButton {
+    border-radius: 0;
+    border-right: none;
+}
+
+#voiceButton.active {
+    background-color: #dc3545;
+    color: white;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.header p {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+.bi-arrow-right {
+    margin-right: 5px;
+}
+
 /* Добавьте это в style.css */
 .special-buttons {
     display: flex;
