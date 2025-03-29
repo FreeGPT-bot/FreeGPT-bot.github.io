@@ -8,6 +8,21 @@ body {
     color: #e2e8f0;
 }
 
+.message {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.typing-animation::after {
+    content: '...';
+    animation: typing 1.5s infinite;
+}
+
+@keyframes typing {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+}
+
 .chat-container {
     max-width: 800px;
     margin: 0 auto;
