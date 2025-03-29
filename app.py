@@ -4,8 +4,6 @@ import threading
 
 app = Flask(__name__)
 client = Client()
-
-# Глобальная блокировка для потокобезопасности
 lock = threading.Lock()
 
 @app.route('/')
@@ -19,21 +17,16 @@ def chat():
         if not prompt:
             return jsonify({"error": "Пустой запрос"}), 400
         
-        # Используем блокировку для потокобезопасности
         with lock:
             response = client.chat.completions.create(
                 model="gpt-4",
-                messages=[{"role": "user", "content": prompt}]
+                messages=[{"role": "user", "content": prompt}],
+                timeout=60  # Увеличенный таймаут
             )
-            
-            return jsonify({
-                "response": response.choices[0].message.content
-            })
+            return jsonify({"response": response.choices[0].message.content})
             
     except Exception as e:
-        return jsonify({
-            "error": f"Ошибка нейросети: {str(e)}"
-        }), 500
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
