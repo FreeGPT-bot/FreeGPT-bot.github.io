@@ -17,9 +17,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function addMessage(text, isUser) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+        messageDiv.style.opacity = 0;
+        messageDiv.style.transform = 'translateY(10px)';
         
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
+        contentDiv.textContent = text;  // Убедитесь, что используем textContent
         
         const timeDiv = document.createElement('div');
         timeDiv.className = 'message-time';
@@ -35,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
             messageDiv.style.transform = 'translateY(0)';
         }, 10);
         
-        return contentDiv;
+        return contentDiv;  // Возвращаем contentDiv для последующего изменения текста
     }
 
     // Обработчик отправки
@@ -49,11 +52,12 @@ document.addEventListener('DOMContentLoaded', function() {
         userInput.disabled = true;
         sendButton.disabled = true;
         
-        // Показываем сообщение пользователя
-        addMessage(prompt, true);
+        // Показываем сообщение пользователя (с текстом сразу)
+        const userContent = addMessage(prompt, true);
+        
         userInput.value = '';
         
-        // Индикатор загрузки
+        // Индикатор загрузки (пустой сначала)
         const botContent = addMessage('', false);
         botContent.classList.add('typing-animation');
         
