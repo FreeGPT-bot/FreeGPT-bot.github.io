@@ -1,23 +1,12 @@
 from flask import Flask, request, jsonify, render_template
 from g4f.client import Client
-import asyncio
-import concurrent.futures
+import threading
 
 app = Flask(__name__)
+client = Client()
 
-# Создаем пул потоков для асинхронных задач
-executor = concurrent.futures.ThreadPoolExecutor(max_workers=4)
-
-async def async_chat(prompt):
-    try:
-        client = Client()
-        response = await client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "user", "content": prompt}]
-        )
-        return response.choices[0].message.content
-    except Exception as e:
-        return f"Ошибка нейросети: {str(e)}"
+# Глобальная блокировка для потокобезопасности
+lock = threading.Lock()
 
 @app.route('/')
 def home():
@@ -25,21 +14,26 @@ def home():
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    prompt = request.json.get('prompt')
-    
-    # Запускаем асинхронную функцию в отдельном потоке
-    future = executor.submit(
-        lambda p: asyncio.run(async_chat(p)),
-        prompt
-    )
-    
     try:
-        result = future.result(timeout=30)  # Таймаут 30 секунд
-        return jsonify({"response": result})
-    except concurrent.futures.TimeoutError:
-        return jsonify({"error": "Превышено время ожидания"}), 504
+        prompt = request.json.get('prompt')
+        if not prompt:
+            return jsonify({"error": "Пустой запрос"}), 400
+        
+        # Используем блокировку для потокобезопасности
+        with lock:
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}]
+            )
+            
+            return jsonify({
+                "response": response.choices[0].message.content
+            })
+            
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({
+            "error": f"Ошибка нейросети: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
