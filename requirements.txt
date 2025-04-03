@@ -5,4 +5,5 @@ requests
 browser_cookie3
 nodriver
 platformdirs
+curl_cffi
 flask[async]
