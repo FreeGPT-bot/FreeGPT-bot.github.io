@@ -2,4 +2,7 @@ flask
 gunicorn
 g4f
 requests
+browser_cookie3
+nodriver
+platformdirs
 flask[async]
