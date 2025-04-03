@@ -14,6 +14,26 @@ body {
 
 /* Добавьте эти стили в ваш существующий CSS */
 
+/* Добавьте это в ваш CSS файл или в тег <style> */
+.chat-box::-webkit-scrollbar {
+    width: 10px; /* Ширина полосы прокрутки */
+}
+
+.chat-box::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.2); /* Цвет трека */
+    border-radius: 5px;
+}
+
+.chat-box::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6, #2563eb); /* Синий градиент */
+    border-radius: 5px;
+    border: 2px solid rgba(30, 41, 59, 0.2);
+}
+
+.chat-box::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #2563eb, #1e40af); /* Темнее при наведении */
+}
+
 #voiceButton {
     border-radius: 0;
     border-right: none;
