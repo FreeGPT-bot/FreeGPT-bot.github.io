@@ -9,7 +9,6 @@ client = Client()
 AVAILABLE_MODELS = [
     "gpt-4",
     "gpt-4o",
-    "gpt-4o-mini",
     "o3-mini",
     "mixtral-8x22b",
     "mixtral-small-24b",
