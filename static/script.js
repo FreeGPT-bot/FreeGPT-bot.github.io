@@ -3,10 +3,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const userInput = document.getElementById('userInput');
     const sendButton = document.getElementById('sendButton');
     const voiceButton = document.getElementById('voiceButton');
+    const imageGenToggle = document.getElementById('imageGenToggle');
+    const modelDropdown = document.getElementById('modelDropdown');
     
     let isProcessing = false;
     let currentBotMessage = null;
     let recognition = null;
+    let isListening = false;
+    let currentModel = 'gpt-4o-mini';
+    let isImageGenMode = false;
 
     // Проверка JSON ответа
     async function parseJSON(response) {
@@ -39,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isImage) {
             contentDiv.src = content;
             contentDiv.style.maxWidth = '100%';
+            contentDiv.style.borderRadius = '10px';
         } else {
             contentDiv.textContent = content;
         }
@@ -73,37 +79,93 @@ document.addEventListener('DOMContentLoaded', function() {
     // Инициализация голосового ввода
     function initVoiceRecognition() {
         try {
-            recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
             recognition.lang = 'ru-RU';
             recognition.interimResults = false;
-            
-            recognition.onresult = function(event) {
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                isListening = true;
+                voiceButton.classList.add('active');
+                addMessage("🎤 Слушаю...", false);
+            };
+
+            recognition.onresult = (event) => {
                 const transcript = event.results[0][0].transcript;
                 userInput.value = transcript;
+                sendMessage(); // Автоматически отправляем после распознавания
             };
-            
-            recognition.onerror = function(event) {
-                console.error('Voice recognition error', event.error);
-                addMessage('⚠️ Ошибка голосового ввода', false);
+
+            recognition.onerror = (event) => {
+                console.error('Ошибка распознавания:', event.error);
+                addMessage(`❌ Ошибка голосового ввода: ${event.error}`, false);
+                voiceButton.classList.remove('active');
+                isListening = false;
             };
+
+            recognition.onend = () => {
+                if (isListening) {
+                    recognition.start(); // Продолжаем слушать
+                } else {
+                    voiceButton.classList.remove('active');
+                }
+            };
+
         } catch (e) {
-            console.error('Voice recognition not supported', e);
+            console.error('Голосовой ввод не поддерживается:', e);
             voiceButton.disabled = true;
-            voiceButton.title = 'Голосовой ввод не поддерживается';
+            voiceButton.title = 'Голосовой ввод не поддерживается в вашем браузере';
+            addMessage("⚠️ Ваш браузер не поддерживает голосовой ввод", false);
         }
     }
 
-    // Обработчик голосового ввода
-    voiceButton.addEventListener('click', function() {
-        if (recognition) {
-            if (recognition.recording) {
-                recognition.stop();
-                voiceButton.classList.remove('active');
-            } else {
+    // Обработчик кнопки голосового ввода
+    voiceButton.addEventListener('click', async () => {
+        if (!recognition) {
+            initVoiceRecognition();
+            return;
+        }
+
+        if (isListening) {
+            isListening = false;
+            recognition.stop();
+        } else {
+            try {
+                // Запрашиваем разрешение на микрофон
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop());
+                
+                isListening = true;
                 recognition.start();
-                voiceButton.classList.add('active');
+            } catch (error) {
+                console.error('Ошибка доступа к микрофону:', error);
+                addMessage("❌ Не удалось получить доступ к микрофону. Пожалуйста, разрешите доступ.", false);
             }
         }
+    });
+
+    // Выбор модели
+    document.querySelectorAll('.model-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+            currentModel = this.dataset.model;
+            modelDropdown.textContent = `Модель: ${currentModel}`;
+            addMessage(`✅ Выбрана модель: ${currentModel}`, false);
+        });
+    });
+
+    // Переключение режима генерации изображений
+    imageGenToggle.addEventListener('click', function() {
+        isImageGenMode = !isImageGenMode;
+        this.classList.toggle('active', isImageGenMode);
+        userInput.placeholder = isImageGenMode 
+            ? "Опишите изображение для генерации..." 
+            : "Введите ваш вопрос...";
+        
+        addMessage(isImageGenMode 
+            ? "🖼️ Режим генерации изображений активирован" 
+            : "📝 Режим чата активирован", false);
     });
 
     // Отправка сообщения
@@ -120,25 +182,38 @@ document.addEventListener('DOMContentLoaded', function() {
         addMessage(prompt, true);
         userInput.value = '';
         
-        const loadingMsg = addMessage("✍️ Печатает...", false);
+        const loadingMsg = addMessage(
+            isImageGenMode ? "🎨 Генерирую изображение..." : "✍️ Печатает...", 
+            false
+        );
         
         try {
             const data = await safeFetch('/chat', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify({ 
+                    prompt,
+                    model: currentModel,
+                    isImageGen: isImageGenMode
+                })
             });
             
-            chatBox.removeChild(loadingMsg);
+            chatBox.removeChild(loadingMsg.parentElement);
             
             if (data.error) {
-                addMessage(`❌ ${data.error}`, false);
-            } else {
+                addMessage(`❌ Ошибка: ${data.error}`, false);
+            } else if (isImageGenMode && data.imageUrl) {
+                const img = document.createElement('img');
+                img.src = data.imageUrl;
+                img.style.maxWidth = '100%';
+                img.style.borderRadius = '10px';
+                addMessage(img, false, true);
+            } else if (data.response) {
                 addMessage(data.response, false);
             }
         } catch (error) {
-            chatBox.removeChild(loadingMsg);
-            addMessage("⚠️ Ошибка соединения", false);
+            chatBox.removeChild(loadingMsg.parentElement);
+            addMessage(`⚠️ Ошибка соединения: ${error.message}`, false);
         } finally {
             isProcessing = false;
             userInput.disabled = false;
@@ -150,7 +225,4 @@ document.addEventListener('DOMContentLoaded', function() {
     // Обработчики событий
     sendButton.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendMessage());
-
-    // Инициализация голосового ввода при загрузке
-    initVoiceRecognition();
 });
