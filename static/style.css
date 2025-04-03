@@ -14,6 +14,23 @@ body {
 
 /* Добавьте эти стили в ваш существующий CSS */
 
+#voiceButton {
+    transition: all 0.3s ease;
+    border-radius: 0 5px 5px 0;
+}
+
+#voiceButton.active {
+    background-color: #3b82f6;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
 /* Добавьте это в ваш CSS файл или в тег <style> */
 .chat-box::-webkit-scrollbar {
     width: 10px; /* Ширина полосы прокрутки */
