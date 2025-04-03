@@ -1,4 +1,4 @@
 flask>=2.0.0
-g4f>=0.4.9.9
+g4f>=0.5.0.2
 requests>=2.25.0
 flask[async]
